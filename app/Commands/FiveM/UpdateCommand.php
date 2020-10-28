@@ -43,13 +43,13 @@ class UpdateCommand extends BaseCommand
 
         $crawler = GoutteFacade::request('GET', $buildsURL);
         $newestBuild = collect($crawler->filter('a')->each(function ($n) use ($buildsURL) {
-            $link = $n->attr('href');
+            $link = substr($n->attr('href'), 2);
             if (! is_numeric(substr($link, 0, 3))) {
                 return;
             }
             $version = explode('-', trim($link, '/'))[0];
 
-            return ['version' => intval($version), 'link' => $buildsURL.$link.'fx.tar.xz'];
+            return ['version' => intval($version), 'link' => $buildsURL.$link];
         }))->filter()->sortByDesc('version')->first();
         $this->fxVersionNumber = $newestBuild['version'];
         $link = $newestBuild['link'];
